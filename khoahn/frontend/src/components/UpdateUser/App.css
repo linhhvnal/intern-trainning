@@ -1,0 +1,85 @@
+.container{
+  max-width: 700px;
+  width: 100%;
+  background: white ;
+  padding: 25px 60px;
+  border-radius: 10px;
+}
+
+.title{
+  font-size: 25px;
+  font-weight: 750;
+}
+
+.avatar{
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.avatar img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgb(165, 30, 30);
+  cursor: pointer;
+}
+
+.avatar img:hover {
+  filter: brightness(70%); 
+  opacity: 0.7; 
+}
+
+.container form .user-details{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+form .user-details .input-box{
+  margin: 10px ;
+  width: 500px;
+}
+
+.user-details .input-box input{
+  height: 45px;
+  width: 100%;
+  outline: none;
+  border-radius: 5px;
+  border: 1px solid;
+  padding-left: 15px;
+  font-size: 16px;
+}
+
+.user-details .input-box input:focus {
+  border-color: palevioletred; 
+}
+
+.user-details .input-box .label{
+  font-weight: 600;
+}
+
+form .submit-button {
+  margin-top: 20px; /
+}
+
+form .submit-button input{
+  height: 50px;
+  width: 100%;
+  outline: none;
+  color:white;
+  border: none;
+  font-size: 18px;
+  font-weight: 500;
+  border-radius: 5px;
+  letter-spacing: 1px;
+  background: pink;
+  cursor: pointer;
+}
+
+form .submit-button input:hover{
+  background: palevioletred;
+}
+
+
