@@ -1,27 +1,17 @@
-import React, { useState } from 'react';
-import './App.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React from 'react';
+import Login from './Components/Login/Login';
+import Register from './Components/Register/Register';
 
-function App() {
-  const [inputText, setInputText] = useState('');
-
-  const handleInputChange = (event) => {
-    setInputText(event.target.value);
-  };
-
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Welcome to My App</h1>
-        <input
-          type="text"
-          value={inputText}
-          onChange={handleInputChange}
-          placeholder="Enter a word"
-        />
-        <p>Entered: {inputText}</p>
-      </header>
+    <div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
-
-export default App;
