@@ -29,7 +29,7 @@ const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser 
         <input
           type="text"
           className="text-xl text-slate-950 outline-none"
-          placeholder="Go to gym at 5"
+          placeholder="status"
           value={status}
           onChange={({ target }) => setStatus(target.value)}
         />
@@ -40,7 +40,7 @@ const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser 
         <input
           type="text"
           className="text-xl text-slate-950 outline-none"
-          placeholder="Go to gym at 5"
+          placeholder="name"
           value={name}
           onChange={({ target }) => setName(target.value)}
         />
@@ -51,7 +51,7 @@ const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser 
         <input
           type="text"
           className="text-xl text-slate-950 outline-none"
-          placeholder="Go to gym at 5"
+          placeholder="email"
           value={email}
           onChange={({ target }) => setEmail(target.value)}
         />
@@ -62,7 +62,7 @@ const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser 
         <input
           type="text"
           className="text-xl text-slate-950 outline-none"
-          placeholder="Go to gym at 5"
+          placeholder="address"
           value={address}
           onChange={({ target }) => setAddress(target.value)}
         />
@@ -73,7 +73,7 @@ const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser 
         <input
           type="text"
           className="text-xl text-slate-950 outline-none"
-          placeholder="Go to gym at 5"
+          placeholder="phone number"
           value={phone}
           onChange={({ target }) => setPhone(target.value)}
         />
