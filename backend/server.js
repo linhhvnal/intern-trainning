@@ -18,17 +18,21 @@ app.use(express.urlencoded({ extended: true }));
 
 // database
 const db = require("./app/models");
-const Role = db.role;
 
 db.sequelize.sync();
 
 // simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to intern training application." });
+  res.json({ message: `Welcome to ${config.APP_NAME}`  });
 });
 
 // routes
+// authentication routes
 require('./app/routes/auth.routes')(app);
+
+// user routes
+require('./app/routes/user.routes')(app);
+
 
 // set port, listen for requests
 const PORT = config.APP_PORT || 8080;
@@ -36,19 +40,4 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
 
-function initial() {
-  Role.create({
-    id: 1,
-    name: "user"
-  });
- 
-  Role.create({
-    id: 2,
-    name: "moderator"
-  });
- 
-  Role.create({
-    id: 3,
-    name: "admin"
-  });
-}
+module.exports = app;
