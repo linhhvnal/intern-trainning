@@ -1,15 +1,25 @@
-exports.allAccess = (req, res) => {
-  res.status(200).send("Public Content.");
+
+
+exports.listUser = (req, res) => {
+  res.json({
+    message: "List User",
+    data: []
+  });
 };
 
-exports.userBoard = (req, res) => {
-  res.status(200).send("User Content.");
+exports.getUser = (req, res) => {
+  res.json({
+    message: "Get User",
+    data: {
+      id: req.params.id
+
+    }
+  });
 };
 
-exports.adminBoard = (req, res) => {
-  res.status(200).send("Admin Content.");
-};
-
-exports.moderatorBoard = (req, res) => {
-  res.status(200).send("Moderator Content.");
-};
+exports.createUser = (req, res) => {
+  res.json({
+    message: "Create User",
+    data: req.body
+  });
+}
