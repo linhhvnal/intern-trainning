@@ -14,7 +14,7 @@ module.exports = function (app) {
 
   app.get(
     "/api/v1/users",
-    
+    [],
     controller.listUser
   );
 
@@ -24,10 +24,15 @@ module.exports = function (app) {
     controller.getUser
   );
 
-  app.post(
-    "/api/v1/users",
-    controller.createUser
+
+  app.delete(
+    "/api/v1/users/:id",
+    controller.deleteUser
   );
 
+  app.put(
+    "/api/v1/users/:id",
+    controller.updateUser
+  )
   // METHOD: GET, POST, PUT, DELETE, PATCH
 };
