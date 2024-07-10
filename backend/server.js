@@ -5,7 +5,7 @@ const config = require("./app/config/app.config");
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:8081"
+  origin: "http://localhost:8081",
 };
 
 app.use(cors(corsOptions));
@@ -18,21 +18,48 @@ app.use(express.urlencoded({ extended: true }));
 
 // database
 const db = require("./app/models");
+const Role = db.role;
 
-db.sequelize.sync();
+db.sequelize.sync({ force: true }).then(() => {
+  console.log("Drop and Resync Db");
+  initial();
+});
+// db.sequelize.sync();
+
+function initial() {
+  Role.create({
+    id: 1,
+    name: "user",
+  }).catch((err) => {
+    if (err) console.log("Role 'user' already exists");
+  });
+
+  Role.create({
+    id: 2,
+    name: "moderator",
+  }).catch((err) => {
+    if (err) console.log("Role 'user' already exists");
+  });
+
+  Role.create({
+    id: 3,
+    name: "admin",
+  }).catch((err) => {
+    if (err) console.log("Role 'user' already exists");
+  });
+}
 
 // simple route
 app.get("/", (req, res) => {
-  res.json({ message: `Welcome to ${config.APP_NAME}`  });
+  res.json({ message: `Welcome to ${config.APP_NAME}` });
 });
 
 // routes
 // authentication routes
-require('./app/routes/auth.routes')(app);
+require("./app/routes/auth.routes")(app);
 
 // user routes
-require('./app/routes/user.routes')(app);
-
+require("./app/routes/user.routes")(app);
 
 // set port, listen for requests
 const PORT = config.APP_PORT || 8080;
