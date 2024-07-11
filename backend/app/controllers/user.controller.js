@@ -1,38 +1,95 @@
-const { user, role } = require('../models/index');
+// const { User } = require("../models/user.model");
+const { user } = require("../models/index");
+var bcrypt = require("bcryptjs");
 
-exports.listUser = async (req, res) => { //userDetail
+const { ParseAndPaginateUsers } = require('../helper/paging');
+const { filterUsersName, filterUserId } = require("../helper/userFilter");
+exports.listUser = async (req, res) => {
   try {
-    const users = await user.findAll({
-      include: [{
-        model: role,
-        attributes: ['userid', 'fullname', 'address']
-      }],
-      attributes: ['id', 'username', 'password']
-    });
+    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page) || 1;
+    const filterName = req.query.username;
+    const filterId = req.query.id;
+
+    const users = await user.findAll();
+    let filteredUser = users;
+
+    if (filterName) {
+      filteredUser = filterUsersName(filteredUser, filterName);
+    }
+
+    if (filterId) {
+      filteredUser = filterUserId(filteredUser, filterId)
+    }
+
+    const paginatedUsers = ParseAndPaginateUsers(filteredUser, limit, page);
     res.json({
-      message: "List of Users",
-      data: users
+      message: "User List",
+      data: paginatedUsers,
     });
   } catch (error) {
-    console.error('Error retrieving users:', error);
-    // Handle errors appropriately (e.g., send error response to client)
-    res.status(500).json({ message: "Error retrieving users" });
+    res.status(500).json({
+      message: "Error",
+      error: error.message,
+    });
   }
 };
 
-exports.getUser = (req, res) => {
-  res.json({
-    message: "Get User",
-    data: {
-      id: req.params.id
+exports.getUser = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
 
-    }
-  });
+    const temp = await user.findByPk(id);
+
+    res.json({
+      message: "User Detail",
+      data: temp,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error",
+      error: error.message,
+    });
+  }
 };
 
-exports.createUser = (req, res) => {
-  res.json({
-    message: "Create User",
-    data: req.body
-  });
-}
+exports.deleteUser = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const userToDelete = await user.findByPk(id);
+    userToDelete.deletedAt = new Date();
+    await userToDelete.save();
+
+    res.json({
+      message: "User Soft Deleted",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error",
+      error: error.message,
+    });
+  }
+};
+exports.updateUser = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { username, email, password, address } = req.body;
+    const temp = await user.findByPk(id);
+    temp.username = username;
+    temp.email = email;
+    temp.password = bcrypt.hashSync(password, 8);
+    temp.address = address;
+
+    await temp.save();
+
+    res.json({
+      message: "User Updated",
+      data: temp,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error",
+      error: error.message,
+    });
+  }
+};

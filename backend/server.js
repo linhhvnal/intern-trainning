@@ -5,7 +5,7 @@ const config = require("./app/config/app.config");
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:8081"
+  origin: "http://localhost:8081",
 };
 
 app.use(cors(corsOptions));
@@ -16,14 +16,15 @@ app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
-// database and setroles
-const db = require('../backend/app/models/index');
+// database
+const db = require("./app/models");
 initial = require('./app/middleware/initialRole')
 
 db.sequelize.sync({ alter: true }).then(() => {
-  console.log('Drop and Resync Db');
+  console.log("Drop and Resync Db");
   initial();
 });
+
 
 
 // simple route
@@ -33,11 +34,10 @@ app.get("/", (req, res) => {
 
 // routes
 // authentication routes
-require('./app/routes/auth.routes')(app);
+require("./app/routes/auth.routes")(app);
 
 // user routes
-require('./app/routes/user.routes')(app);
-
+require("./app/routes/user.routes")(app);
 
 // set port, listen for requests
 const PORT = config.APP_PORT || 8080;
