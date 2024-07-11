@@ -2,12 +2,30 @@
 const { user } = require("../models/index");
 var bcrypt = require("bcryptjs");
 
+const { ParseAndPaginateUsers } = require('../helper/paging');
+const { filterUsersName, filterUserId } = require("../helper/userFilter");
 exports.listUser = async (req, res) => {
   try {
+    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page) || 1;
+    const filterName = req.query.username;
+    const filterId = req.query.id;
+
     const users = await user.findAll();
+    let filteredUser = users;
+
+    if (filterName) {
+      filteredUser = filterUsersName(filteredUser, filterName);
+    }
+
+    if (filterId) {
+      filteredUser = filterUserId(filteredUser, filterId)
+    }
+
+    const paginatedUsers = ParseAndPaginateUsers(filteredUser, limit, page);
     res.json({
       message: "User List",
-      data: users,
+      data: paginatedUsers,
     });
   } catch (error) {
     res.status(500).json({
@@ -38,12 +56,12 @@ exports.getUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const temp = await user.findByPk(id);
-    await temp.destroy();
+    const userToDelete = await user.findByPk(id);
+    userToDelete.deletedAt = new Date();
+    await userToDelete.save();
 
     res.json({
-      message: "User Deleted",
-      data: temp,
+      message: "User Soft Deleted",
     });
   } catch (error) {
     res.status(500).json({
@@ -59,7 +77,7 @@ exports.updateUser = async (req, res) => {
     const temp = await user.findByPk(id);
     temp.username = username;
     temp.email = email;
-    temp.password =  bcrypt.hashSync(password, 8);
+    temp.password = bcrypt.hashSync(password, 8);
     temp.address = address;
 
     await temp.save();
