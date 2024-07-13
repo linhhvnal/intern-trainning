@@ -4,6 +4,7 @@ var bcrypt = require("bcryptjs");
 
 const { ParseAndPaginateUsers } = require('../helper/paging');
 const { filterUsersName, filterUserId } = require("../helper/userFilter");
+
 exports.listUser = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 10;
@@ -11,7 +12,7 @@ exports.listUser = async (req, res) => {
     const filterName = req.query.username;
     const filterId = req.query.id;
 
-    const users = await user.findAll();
+    const users = await user.findAll({ where: { deletedAt: null } });
     let filteredUser = users;
 
     if (filterName) {
@@ -70,6 +71,7 @@ exports.deleteUser = async (req, res) => {
     });
   }
 };
+
 exports.updateUser = async (req, res) => {
   try {
     const id = parseInt(req.params.id);

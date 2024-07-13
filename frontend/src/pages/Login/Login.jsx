@@ -1,17 +1,20 @@
 import PasswordInput from "../../components/Input/PasswordInput.jsx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { validateEmail } from "../../utils/helper.js";
+import axios from "axios";
+
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+  const [redirecting, setRedirecting] = useState(false);
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log(email);
-    if (!validateEmail(email)) {
-      setError("Please enter a valid Email");
+    console.log(username);
+    if (!username) {
+      setError("Please enter a valid username");
       return;
     }
     if (!password) {
@@ -19,6 +22,23 @@ const Login = () => {
       return;
     }
     setError("");
+    try {
+      const response = await axios.post("http://localhost:3000/api/auth/signin", {
+        username, // Use 'username' in the request body
+        password,
+      });
+
+      if (response.status === 200) {
+        setError("Login successful:", response.data);
+        setRedirecting(true);
+        setTimeout(() => {
+          navigate("/users");
+        }, 3000);
+      }
+    } catch (error) {
+      console.error("Login error:", error.message);
+      setError("An error occurred during login. Please try again.");
+    }
   };
 
   return (
@@ -30,21 +50,18 @@ const Login = () => {
             <h4 className="text-2xl mb-7 select-none">Login</h4>
             <input
               type="text"
-              placeholder="Email"
+              placeholder="Username"
               className="input-box select-none"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             ></input>
             <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            
-
             {error && (
               <p className="text-red-500 text-xs pb-1 select-none">{error}</p>
             )}
-
             <button type="submit" className="btn-primary select-none">
               login
             </button>
@@ -57,6 +74,9 @@ const Login = () => {
           </form>
         </div>
       </div>
+      {redirecting && (
+        <p className="text-blue-500 text-center pb-1 select-none">Redirecting to Users...</p>
+      )}
     </>
   );
 };

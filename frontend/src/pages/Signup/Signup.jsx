@@ -1,39 +1,54 @@
 import { useState } from "react";
 import PasswordInput from "../../components/Input/PasswordInput";
-import { Link } from "react-router-dom";
-import { validateEmail } from "../../utils/helper";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+
 const Signup = () => {
+  const navigate = useNavigate();
+  const [redirecting, setRedirecting] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [address, setAddress] = useState("");
-  const [avatar, setAvatar] = useState(null);
-
-  const [name, setName] = useState("");
+  const [username, setName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(null);
+
   const handleSignup = async (e) => {
     e.preventDefault();
-    if (!name) {
+    if (!username) {
       setError("Please enter your name");
-      return;
-    }
-    if (!validateEmail(email)) {
-      setError("Please enter a valid Email");
       return;
     }
     if (!password) {
       setError("Please enter a password");
       return;
     }
-    // if (!confirmPassword) {
-    //   setError("Please confirm your password");
-    //   return;
-    // }
-    if (password !== confirmPassword || !confirmPassword) {
-      setError("Passwords do not match");
+    if (password !== confirmPassword) {
+      setError("Password and confirmPassword not async");
       return;
     }
-    setError("");
+
+    setError('');
+    try {
+      const response = await axios.post("http://localhost:3000/api/auth/signup", {
+        username,
+        email,
+        password,
+        address,
+      });
+      if (response.status === 200) {
+        setError("User registered successfully!");
+        setRedirecting(true);
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
+      } else
+        if (response.status === 400) {
+          setError("Failed! Username or Email is already in use!");
+        }
+    } catch (error) {
+      setError("Network Error! Please try again laterrr.");
+    }
   };
 
   return (
@@ -48,7 +63,7 @@ const Signup = () => {
               type="text"
               placeholder="Name"
               className="input-box select-none"
-              value={name}
+              value={username}
               onChange={(e) => setName(e.target.value)}
             ></input>
             <input
@@ -74,13 +89,6 @@ const Signup = () => {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
             />
-            <input
-              type="file"
-              value={avatar}
-              className="input-box select-none"
-              onChange={(e) => setAvatar(e.target.files[0])}
-              accept="image/*"
-            />
             {error && (
               <p className="text-red-500 text-xs pb-1 select-none">{error}</p>
             )}
@@ -97,7 +105,11 @@ const Signup = () => {
           </form>
         </div>
       </div>
+      {redirecting && (
+        <p className="text-blue-500 text-center pb-1 select-none">Redirecting to Login...</p>
+      )}
     </>
+
   );
 };
 
