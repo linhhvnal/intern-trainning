@@ -1,12 +1,12 @@
-import users from "../../assets/users.json";
+// import users from "../../assets/users.json";
 import NavBar from "../../components/NavBar/NavBar";
 import UserCard from "../../components/UserCard/UserCard";
 import Pagination from "../../components/Pagination/Pagination";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import UserDetail from "./UserDetail.jsx";
 import Modal from "react-modal";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import axiosInstance from "../../utils/axiosInstance";
 const UserList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
@@ -15,21 +15,36 @@ const UserList = () => {
     type: "edit",
     data: null,
   });
+  const [users, setUsers] = useState([]);
   const usersPerPage = 12;
   const lastUserIndex = currentPage * usersPerPage;
   const firstUserIndex = lastUserIndex - usersPerPage;
-  const currentUsers = users.slice(firstUserIndex, lastUserIndex);
-  let temp = currentUsers;
-  let tempLength = temp.length;
-  const handleSearch = () => {
-    if (searchValue !== "") {
-      const filteredUsers = users.filter((user) =>
-        user.name.toLowerCase().includes(searchValue.toLowerCase()));
-      temp = filteredUsers.slice(firstUserIndex, lastUserIndex);
-      tempLength = filteredUsers.length;
-      // setCurrentPage(1);
+  // const currentUsers = users.slice(firstUserIndex, lastUserIndex);
+  // let temp = currentUsers;
+  // let tempLength = temp.length;
+  // const handleSearch = () => {
+  //   if (searchValue !== "") {
+  //     const filteredUsers = users.filter((user) =>
+  //       user.name.toLowerCase().includes(searchValue.toLowerCase()));
+  //     temp = filteredUsers.slice(firstUserIndex, lastUserIndex);
+  //     tempLength = filteredUsers.length;
+  //     // setCurrentPage(1);
+  //   }
+  // };
+  const getUsers = async () => {
+    try {
+      const res = await axiosInstance.get("/api/v1/users");
+      setUsers(res.data.data);
+      console.log(res.data.data);
+    } catch (error) {
+      console.log(error);
+      setUsers([]);
     }
-  };
+  }
+  useEffect(() => {
+    getUsers();
+    return () => {};
+  }, []);
   return (
     <>
       <NavBar/>
@@ -37,21 +52,21 @@ const UserList = () => {
         <SearchBar
           value={searchValue}
           onChange={({ target }) => setSearchValue(target.value)}
-          onKeyDown={handleSearch()}
+          onKeyDown={()=>{}}
         />
       </div>
       <div className="flex items-center justify-center mt-10">
         <div className="grid grid-cols-3 ">
-          {temp.map((user, index) => (
+          {users.map((user, index) => (
             <UserCard user={user} key={index} onClick={()=>setOpenEditUser({ isOpen: true , type: "edit", data: user})}/>
           ))}
         </div>
       </div>
-      <Pagination
+      {/* <Pagination
         totalUsers={searchValue === "" ? users.length : tempLength}
         usersPerPage={usersPerPage}
         setCurrentPage={setCurrentPage}
-      />
+      /> */}
 
       <Modal
         isOpen={openEditUser.isOpen}

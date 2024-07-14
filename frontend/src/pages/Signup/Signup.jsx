@@ -1,15 +1,16 @@
 import { useState } from "react";
 import PasswordInput from "../../components/Input/PasswordInput";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { validateEmail } from "../../utils/helper";
+import axiosInstance from "../../utils/axiosInstance";
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [address, setAddress] = useState("");
-  const [avatar, setAvatar] = useState(null);
-
   const [name, setName] = useState("");
+
+  const navigate = useNavigate();
   const [error, setError] = useState(null);
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -25,15 +26,30 @@ const Signup = () => {
       setError("Please enter a password");
       return;
     }
-    // if (!confirmPassword) {
-    //   setError("Please confirm your password");
-    //   return;
-    // }
+
     if (password !== confirmPassword || !confirmPassword) {
       setError("Passwords do not match");
       return;
     }
     setError("");
+
+    try {
+      const res = await axiosInstance.post("/api/auth/signup", {
+        username: name,
+        email: email,
+        password: password,
+        address: address,
+      })
+      console.log(res.data);
+      console.log(res.date.accessToken);
+      navigate("/users");
+      
+    } catch (error){
+      if (error.res && error.res.data && error.res.data.message){
+        setError(error.response.data.message);
+      } else {
+        setError("Something went wrong. Please try again later");
+    }}
   };
 
   return (
@@ -73,13 +89,6 @@ const Signup = () => {
               className="input-box select-none"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-            />
-            <input
-              type="file"
-              value={avatar}
-              className="input-box select-none"
-              onChange={(e) => setAvatar(e.target.files[0])}
-              accept="image/*"
             />
             {error && (
               <p className="text-red-500 text-xs pb-1 select-none">{error}</p>

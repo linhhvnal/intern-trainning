@@ -15,10 +15,7 @@ exports.signup = async (req, res) => {
       email: req.body.email,
       address: req.body.address,
       password: bcrypt.hashSync(req.body.password, 8),
-      // createdAt: new Date(),
-      // updatedAt: new Date(),
     });
-
     if (req.body.roles) {
       let roles = await Role.findAll({
         where: {
@@ -30,6 +27,7 @@ exports.signup = async (req, res) => {
       {
         user.setRoles(roles)
         res.send({ message: "User registered successfully!" });
+      
       };
     }
     else {

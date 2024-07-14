@@ -7,12 +7,9 @@ const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser 
         type: propTypes.string.isRequired,
         onClose: propTypes.func.isRequired,
     };
-  const [status, setStatus] = useState(noteData?.status);
-  const [name, setName] = useState(noteData?.name);
+  const [username, setUserName] = useState(noteData?.username);
   const [email, setEmail] = useState(noteData?.email);
   const [address, setAddress] = useState(noteData?.address);
-  const [phone, setPhone] = useState(noteData?.phonenumber);
-  const [error, setError] = useState(null);
 
 
   return (
@@ -25,24 +22,13 @@ const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser 
       </button>
 
       <div className="flex flex-col">
-        <label className="input-label select-none">STATUS</label>
-        <input
-          type="text"
-          className="text-xl text-slate-950 outline-none"
-          placeholder="status"
-          value={status}
-          onChange={({ target }) => setStatus(target.value)}
-        />
-      </div>
-
-      <div className="flex flex-col">
         <label className="input-label select-none">NAME</label>
         <input
           type="text"
           className="text-xl text-slate-950 outline-none"
           placeholder="name"
-          value={name}
-          onChange={({ target }) => setName(target.value)}
+          value={username}
+          onChange={({ target }) => setUserName(target.value)}
         />
       </div>
 
@@ -69,19 +55,8 @@ const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser 
       </div>
 
       <div className="flex flex-col">
-        <label className="input-label select-none">PHONE NUMBER</label>
-        <input
-          type="text"
-          className="text-xl text-slate-950 outline-none"
-          placeholder="phone number"
-          value={phone}
-          onChange={({ target }) => setPhone(target.value)}
-        />
-      </div>
-
-      <div className="flex flex-col">
         <label className="input-label select-none">CREATED AT</label>
-        <h1 className="text-xl text-slate-900 outline-none">{noteData?.created_at}</h1>
+        <h1 className="text-xl text-slate-900 outline-none">{noteData?.createdAt}</h1>
       </div>
 
       <button
