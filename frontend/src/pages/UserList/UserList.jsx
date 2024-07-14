@@ -7,7 +7,9 @@ import UserDetail from "./UserDetail.jsx";
 import Modal from "react-modal";
 import { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosInstance";
+import { useNavigate } from "react-router-dom";
 const UserList = () => {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [openEditUser, setOpenEditUser] = useState({
@@ -22,16 +24,29 @@ const UserList = () => {
   // const currentUsers = users.slice(firstUserIndex, lastUserIndex);
   // let temp = currentUsers;
   // let tempLength = temp.length;
-  // const handleSearch = () => {
-  //   if (searchValue !== "") {
-  //     const filteredUsers = users.filter((user) =>
-  //       user.name.toLowerCase().includes(searchValue.toLowerCase()));
-  //     temp = filteredUsers.slice(firstUserIndex, lastUserIndex);
-  //     tempLength = filteredUsers.length;
-  //     // setCurrentPage(1);
-  //   }
-  // };
+  const handleSearch = async () => {
+    if (searchValue !== "") {
+      try {
+        const res = await axiosInstance.get(`/api/v1/users?username=${searchValue}`,{
+          headers: {
+            Authorization: `${localStorage.getItem("accessToken")}`
+          }
+        });
+        setUsers(res.data.data);
+        return;
+      } catch (error) {
+        console.log(error);
+        setUsers([]);
+      }
+    } else {
+      getUsers();
+    } 
+  };
   const getUsers = async () => {
+    if (localStorage.getItem("accessToken") === null) {
+      navigate("/login");
+      return;
+    }
     try {
       const res = await axiosInstance.get("/api/v1/users",{
         headers: {
@@ -50,16 +65,15 @@ const UserList = () => {
     getUsers();
     return () => {};
   }, []);
+
+  useEffect(() => {
+    handleSearch();
+    return () => {};
+  }, [searchValue]);
   return (
     <>
-      <NavBar/>
-      <div className="flex justify-center z-1 absolute top-2 right-0 left-0">
-        <SearchBar
-          value={searchValue}
-          onChange={({ target }) => setSearchValue(target.value)}
-          onKeyDown={()=>{}}
-        />
-      </div>
+      <NavBar value={searchValue} onEnter={handleSearch} onChange={({ target }) => setSearchValue(target.value)}/>
+
       <div className="flex items-center justify-center mt-10">
         <div className="grid grid-cols-3 ">
           {users.map((user, index) => (
