@@ -5,10 +5,12 @@ import Pagination from "../../components/Pagination/Pagination";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import UserDetail from "./UserDetail.jsx";
 import Modal from "react-modal";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import axiosInstance from "../../utils/axiosInstance";
+import { useNavigate } from "react-router-dom";
 const UserList = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
   const [openEditUser, setOpenEditUser] = useState({
     isOpen: false,
@@ -16,46 +18,69 @@ const UserList = () => {
     data: null,
   });
   const usersPerPage = 12;
+  const [users, setUsers]=useState([]);
   const lastUserIndex = currentPage * usersPerPage;
   const firstUserIndex = lastUserIndex - usersPerPage;
-  const currentUsers = users.slice(firstUserIndex, lastUserIndex);
-  let temp = currentUsers;
-  let tempLength = temp.length;
-  const handleSearch = () => {
-    if (searchValue !== "") {
-      const filteredUsers = users.filter((user) =>
-        user.name.toLowerCase().includes(searchValue.toLowerCase()));
-      temp = filteredUsers.slice(firstUserIndex, lastUserIndex);
-      tempLength = filteredUsers.length;
-      // setCurrentPage(1);
+  // const currentUsers = users.slice(firstUserIndex, lastUserIndex);
+  // let temp = currentUsers;
+  // let tempLength = temp.length;
+  // const handleSearch = () => {
+  //   if (searchValue !== "") {
+  //     const filteredUsers = users.filter((user) =>
+  //       user.name.toLowerCase().includes(searchValue.toLowerCase()));
+  //     temp = filteredUsers.slice(firstUserIndex, lastUserIndex);
+  //     tempLength = filteredUsers.length;
+  //     // setCurrentPage(1);
+  //   }
+  // };
+  const getUsers = async () => {
+    if (!localStorage.getItem('accessToken')) {
+      navigate('/login')
     }
-  };
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+      const res = await axiosInstance.get("/api/v1/users", {
+        headers: {
+          Authorization: `${accessToken}`, // Include authorization header
+        },
+      });
+      setUsers(res.data.data);
+      console.log(res.data.data);
+    } catch (error) {
+      console.log(error);
+      setUsers([]);
+    }
+  }
+  useEffect(() => {
+    getUsers();
+    return () => { };
+  }, []);
   return (
     <>
-      <NavBar/>
+      <NavBar />
       <div className="flex justify-center z-1 absolute top-2 right-0 left-0">
         <SearchBar
           value={searchValue}
           onChange={({ target }) => setSearchValue(target.value)}
-          onKeyDown={handleSearch()}
+          onKeyDown={() => { }}
         />
       </div>
       <div className="flex items-center justify-center mt-10">
         <div className="grid grid-cols-3 ">
-          {temp.map((user, index) => (
-            <UserCard user={user} key={index} onClick={()=>setOpenEditUser({ isOpen: true , type: "edit", data: user})}/>
+          {users.map((user, index) => (
+            <UserCard user={user} key={index} onClick={() => setOpenEditUser({ isOpen: true, type: "edit", data: user })} />
           ))}
         </div>
       </div>
-      <Pagination
+      {/* <Pagination
         totalUsers={searchValue === "" ? users.length : tempLength}
         usersPerPage={usersPerPage}
         setCurrentPage={setCurrentPage}
-      />
+      /> */}
 
       <Modal
         isOpen={openEditUser.isOpen}
-        onRequestClose={() => {}}
+        onRequestClose={() => { }}
         ariaHideApp={false}
         style={{
           overlay: {
@@ -68,7 +93,7 @@ const UserList = () => {
           type={openEditUser.type}
           noteData={openEditUser.data}
           onClose={() => {
-            setOpenEditUser({ isOpen: false, type: "edit", user: null});
+            setOpenEditUser({ isOpen: false, type: "edit", user: null });
           }}
         />
 

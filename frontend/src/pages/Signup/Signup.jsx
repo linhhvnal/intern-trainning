@@ -30,24 +30,29 @@ const Signup = () => {
 
     setError('');
     try {
-      const response = await axios.post("http://localhost:3000/api/auth/signup", {
-        username,
+      const res = await axiosInstance.post("/api/auth/signup", {
+        username: name,
         email,
         password,
         address,
-      });
-      if (response.status === 200) {
-        setError("User registered successfully!", response.data);
-        setRedirecting(true);
-        setTimeout(() => {
-          navigate("/login");
-        }, 3000);
+      })
+      if (res.status === 200) {
+        console.log("User registered successfully!", res.data);
+        console.log(res.date.accessToken);
+        navigate("/login");
+
       } else
         if (response.status === 400) {
           setError("Failed! Username or Email is already in use!");
         }
     } catch (error) {
-      setError("Network Error! Please try again laterrr.");
+
+      if (error.res && error.res.data && error.res.data.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Something went wrong. Please try again later");
+      }
+
     }
   };
 

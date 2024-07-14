@@ -1,20 +1,19 @@
 import PasswordInput from "../../components/Input/PasswordInput.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
 
+import axiosInstance from "../../utils/axiosInstance.js";
 const Login = () => {
-  const navigate = useNavigate();
-  const [redirecting, setRedirecting] = useState(false);
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-
+  const navigate = useNavigate();
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log(username);
-    if (!username) {
-      setError("Please enter a valid username");
+    console.log(name);
+    if (!name) {
+      setError("Please enter a valid Email");
+
       return;
     }
     if (!password) {
@@ -23,17 +22,18 @@ const Login = () => {
     }
     setError("");
     try {
-      const response = await axios.post("http://localhost:3000/api/auth/signin", {
-        username, // Use 'username' in the request body
+
+      const res = await axiosInstance.post("/api/auth/signin", {
+        username: name, // Use 'username' in the request body
         password,
       });
 
-      if (response.status === 200) {
-        setError("Login successful:", response.data);
-        setRedirecting(true);
-        setTimeout(() => {
-          navigate("/users");
-        }, 3000);
+      if (res.status === 200) {
+        setError("Login successful:", res.data);
+        console.log(res.data.accessToken)
+        localStorage.setItem('accessToken', res.data.accessToken);
+        navigate("/users");
+
       }
     } catch (error) {
       console.error("Login error:", error.message);
@@ -52,18 +52,21 @@ const Login = () => {
               type="text"
               placeholder="Username"
               className="input-box select-none"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+
             ></input>
             <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+
             {error && (
               <p className="text-red-500 text-xs pb-1 select-none">{error}</p>
             )}
             <button onClick={handleLogin} type="submit" className="btn-primary select-none"
-            disabled={username &&password ? false :true} >
+              disabled={name && password ? false : true} >
               login
             </button>
             <p className="text-sm text-center mt-4 select-none">
@@ -75,9 +78,6 @@ const Login = () => {
           </form>
         </div>
       </div>
-      {redirecting && (
-        <p className="text-blue-500 text-center pb-1 select-none">Redirecting to Users...</p>
-      )}
     </>
   );
 };

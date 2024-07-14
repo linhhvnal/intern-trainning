@@ -14,7 +14,7 @@ module.exports = function (app) {
 
   app.get(
     "/api/v1/users",
-    [],
+    [verifyToken],
     controller.listUser
   );
 
