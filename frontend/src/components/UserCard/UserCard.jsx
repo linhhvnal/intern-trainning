@@ -5,7 +5,7 @@ const UserCard = ({ user, onClick }) => {
       key={user.id}
       onClick={onClick}
     >
-      <h1 className="text-xl font-bold select-none">{user.name}</h1>
+      <h1 className="text-xl font-bold select-none">{user.username}</h1>
       <p className="text-gray-500 select-none">{user.email}</p>
     </div>
   );

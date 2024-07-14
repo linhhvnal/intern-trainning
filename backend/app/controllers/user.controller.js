@@ -56,10 +56,11 @@ exports.getUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const userToDelete = await user.findByPk(id);
-    userToDelete.deletedAt = new Date();
-    await userToDelete.save();
-
+    await user.destroy({
+      where: {
+        id: id,
+      },
+    });
     res.json({
       message: "User Soft Deleted",
     });
@@ -75,11 +76,13 @@ exports.updateUser = async (req, res) => {
     const id = parseInt(req.params.id);
     const { username, email, password, address } = req.body;
     const temp = await user.findByPk(id);
-    temp.username = username;
-    temp.email = email;
-    temp.password = bcrypt.hashSync(password, 8);
-    temp.address = address;
-
+    
+    await temp.update({
+      username: username,
+      email: email,
+      password: password && bcrypt.hashSync(password, 8),
+      address: address
+    })
     await temp.save();
 
     res.json({
