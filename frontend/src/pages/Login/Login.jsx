@@ -46,7 +46,7 @@ const Login = () => {
       {/* <NavBar /> */}
       <div className="flex item-center justify-center mt-28">
         <div className="w-96 border-slate-300 border-2 rounded-lg bg-white px-7 py-10">
-          <form onSubmit={handleLogin}>
+          <form >
             <h4 className="text-2xl mb-7 select-none">Login</h4>
             <input
               type="text"
@@ -62,7 +62,8 @@ const Login = () => {
             {error && (
               <p className="text-red-500 text-xs pb-1 select-none">{error}</p>
             )}
-            <button type="submit" className="btn-primary select-none">
+            <button onClick={handleLogin} type="submit" className="btn-primary select-none"
+            disabled={username &&password ? false :true} >
               login
             </button>
             <p className="text-sm text-center mt-4 select-none">

@@ -37,7 +37,7 @@ const Signup = () => {
         address,
       });
       if (response.status === 200) {
-        setError("User registered successfully!");
+        setError("User registered successfully!", response.data);
         setRedirecting(true);
         setTimeout(() => {
           navigate("/login");
