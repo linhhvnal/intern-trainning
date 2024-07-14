@@ -33,9 +33,14 @@ const UserList = () => {
   // };
   const getUsers = async () => {
     try {
-      const res = await axiosInstance.get("/api/v1/users");
+      const res = await axiosInstance.get("/api/v1/users",{
+        headers: {
+          Authorization: `${localStorage.getItem("accessToken")}`
+        }
+      });
       setUsers(res.data.data);
       console.log(res.data.data);
+
     } catch (error) {
       console.log(error);
       setUsers([]);

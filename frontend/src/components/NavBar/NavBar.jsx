@@ -4,6 +4,7 @@ import SearchBar from "../SearchBar/SearchBar";
 const NavBar = () => {
   const navigate = useNavigate();
   const onLogout = () => {
+    localStorage.clear();
     navigate("/login");
   };
   
