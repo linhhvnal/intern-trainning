@@ -19,7 +19,10 @@ const UserList = () => {
   const handleSearch = async () => {
     if (searchValue !== "") {
       try {
-        const res = await axiosInstance.get(`/api/v1/users?username=${searchValue}`);
+        const res = await axiosInstance.get(`/api/v1/users?username=${searchValue}`,{
+          headers: {
+            Authorization: `${localStorage.getItem("accessToken")}`
+        }});
         setUsers(res.data.data);
         return;
       } catch (error) {
@@ -42,8 +45,6 @@ const UserList = () => {
         }
       });
       setUsers(res.data.data);
-      console.log(res.data.data);
-
     } catch (error) {
       console.log(error);
       setUsers([]);

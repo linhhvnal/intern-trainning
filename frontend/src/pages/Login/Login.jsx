@@ -27,7 +27,7 @@ const Login = () => {
       if (res.data.accessToken && res.data) {
         localStorage.setItem("accessToken", res.data.accessToken);  
         localStorage.setItem("user", JSON.stringify(res.data.username));
-        navigate("/users");
+        navigate("/");
       }
       
     } catch (error){
