@@ -5,11 +5,13 @@ import Pagination from "../../components/Pagination/Pagination";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import UserDetail from "./UserDetail.jsx";
 import Modal from "react-modal";
+
 import { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 const UserList = () => {
   const [currentPage, setCurrentPage] = useState(1);
+
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
   const [openEditUser, setOpenEditUser] = useState({
@@ -18,47 +20,63 @@ const UserList = () => {
     data: null,
   });
   const usersPerPage = 12;
-  const [users, setUsers]=useState([]);
-  const lastUserIndex = currentPage * usersPerPage;
-  const firstUserIndex = lastUserIndex - usersPerPage;
-  // const currentUsers = users.slice(firstUserIndex, lastUserIndex);
-  // let temp = currentUsers;
-  // let tempLength = temp.length;
-  // const handleSearch = () => {
-  //   if (searchValue !== "") {
-  //     const filteredUsers = users.filter((user) =>
-  //       user.name.toLowerCase().includes(searchValue.toLowerCase()));
-  //     temp = filteredUsers.slice(firstUserIndex, lastUserIndex);
-  //     tempLength = filteredUsers.length;
-  //     // setCurrentPage(1);
-  //   }
-  // };
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+
+
+// navigate if not authentica.
   const getUsers = async () => {
-    if (!localStorage.getItem('accessToken')) {
-      navigate('/login')
+    const accessToken = localStorage.getItem('accessToken')
+    if (!accessToken) {
+      navigate('/login');
+      return;
     }
+
     try {
-      const accessToken = localStorage.getItem('accessToken');
       const res = await axiosInstance.get("/api/v1/users", {
         headers: {
           Authorization: `${accessToken}`, // Include authorization header
         },
       });
+      setFilteredUsers(res.data.data);
+      setTotalUsers(res.data.data.length);
       setUsers(res.data.data);
       console.log(res.data.data);
     } catch (error) {
       console.log(error);
       setUsers([]);
     }
-  }
+  };
+
   useEffect(() => {
     getUsers();
     return () => { };
   }, []);
+
+  ////paging
+  useEffect(() => {
+    const filtered = users.filter((user) =>
+      user.username.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+    setTotalUsers(filtered.length);
+  }, [searchValue, users]); 
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= Math.ceil(totalUsers / usersPerPage)) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  const startIndex = (currentPage - 1) * usersPerPage;
+  const endIndex = Math.min(currentPage * usersPerPage, filteredUsers.length);
+  const displayedUsers = filteredUsers.slice(startIndex, endIndex);
+
   return (
     <>
       <NavBar />
-      <div className="flex justify-center z-1 absolute top-2 right-0 left-0">
+      <div className="w-80 flex z-1 justify-center max-w-md mx-auto absolute top-2 right-0 left-0">
         <SearchBar
           value={searchValue}
           onChange={({ target }) => setSearchValue(target.value)}
@@ -67,16 +85,19 @@ const UserList = () => {
       </div>
       <div className="flex items-center justify-center mt-10">
         <div className="grid grid-cols-3 ">
-          {users.map((user, index) => (
+          {displayedUsers.map((user, index) => (
             <UserCard user={user} key={index} onClick={() => setOpenEditUser({ isOpen: true, type: "edit", data: user })} />
           ))}
         </div>
       </div>
-      {/* <Pagination
-        totalUsers={searchValue === "" ? users.length : tempLength}
-        usersPerPage={usersPerPage}
-        setCurrentPage={setCurrentPage}
-      /> */}
+      {totalUsers > usersPerPage && (
+        <Pagination
+          totalUsers={totalUsers}
+          usersPerPage={usersPerPage}
+          currentPage={currentPage}
+          setCurrentPage={handlePageChange}
+        />
+      )}
 
       <Modal
         isOpen={openEditUser.isOpen}
@@ -92,6 +113,7 @@ const UserList = () => {
         <UserDetail
           type={openEditUser.type}
           noteData={openEditUser.data}
+          getUser={getUsers}
           onClose={() => {
             setOpenEditUser({ isOpen: false, type: "edit", user: null });
           }}

@@ -1,6 +1,6 @@
 import PasswordInput from "../../components/Input/PasswordInput.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import axiosInstance from "../../utils/axiosInstance.js";
 const Login = () => {
@@ -24,14 +24,17 @@ const Login = () => {
     try {
 
       const res = await axiosInstance.post("/api/auth/signin", {
-        username: name, // Use 'username' in the request body
+        username: name,
         password,
       });
 
       if (res.status === 200) {
-        setError("Login successful:", res.data);
+        setError("Login successful:");
+        console.log(res.data)
         console.log(res.data.accessToken)
         localStorage.setItem('accessToken', res.data.accessToken);
+        localStorage.setItem('username', res.data.username);
+
         navigate("/users");
 
       }
@@ -40,6 +43,12 @@ const Login = () => {
       setError("An error occurred during login. Please try again.");
     }
   };
+  useEffect(() => {
+    if (localStorage.getItem('accessToken')) {
+      navigate('/users');
+      return;
+    }
+  })
 
   return (
     <>

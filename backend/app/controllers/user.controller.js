@@ -7,7 +7,7 @@ const { filterUsersName, filterUserId } = require("../helper/userFilter");
 
 exports.listUser = async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || null;
     const page = parseInt(req.query.page) || 1;
     const filterName = req.query.username;
     const filterId = req.query.id;
@@ -22,12 +22,18 @@ exports.listUser = async (req, res) => {
     if (filterId) {
       filteredUser = filterUserId(filteredUser, filterId)
     }
-
-    const paginatedUsers = ParseAndPaginateUsers(filteredUser, limit, page);
-    res.json({
-      message: "User List",
-      data: paginatedUsers,
-    });
+    if (limit) {
+      const paginatedUsers = ParseAndPaginateUsers(filteredUser, limit, page);
+      res.json({
+        message: "User List",
+        data: paginatedUsers,
+      });
+    } else {
+      res.json({
+        message: "User List",
+        data: filteredUser,
+      })
+    }
   } catch (error) {
     res.status(500).json({
       message: "Error",
@@ -79,7 +85,6 @@ exports.updateUser = async (req, res) => {
     const temp = await user.findByPk(id);
     temp.username = username;
     temp.email = email;
-    temp.password = bcrypt.hashSync(password, 8);
     temp.address = address;
 
     await temp.save();

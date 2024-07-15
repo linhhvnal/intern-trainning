@@ -1,19 +1,41 @@
 import { useState } from "react";
 import { MdClose } from "react-icons/md";
 import propTypes from "prop-types";
-const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser }) => {
+import axiosInstance from "../../utils/axiosInstance";
+const UserDetail = ({ noteData, onClose, getUser }) => {
   UserDetail.propTypes = {
     noteData: propTypes.object,
     type: propTypes.string.isRequired,
     onClose: propTypes.func.isRequired,
+    getUser: propTypes
   };
   const [status, setStatus] = useState(noteData?.status);
-  const [name, setName] = useState(noteData?.name);
+  const [username, setName] = useState(noteData?.username);
   const [email, setEmail] = useState(noteData?.email);
   const [address, setAddress] = useState(noteData?.address);
   const [phone, setPhone] = useState(noteData?.phonenumber);
-  const [error, setError] = useState(null);
 
+  const handleUpdate = async () => {
+    const url = `/api/v1/users/${noteData?.id}`;
+    try {
+      const res = await axiosInstance.put(url, {
+        username,
+        email,
+        address
+      });
+      getUser();
+
+      if (res.status === 200) {
+        console.log("User successfully updated:", res);
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
+  }
+  const handleDelete = async () => {
+    await axiosInstance.delete(`/api/v1/users/${noteData?.id}`)
+    getUser();
+  }
 
   return (
     <div className="relative">
@@ -41,7 +63,7 @@ const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser 
           type="text"
           className="text-xl text-slate-950 outline-none"
           placeholder="name"
-          value={name}
+          value={username}
           onChange={({ target }) => setName(target.value)}
         />
       </div>
@@ -81,18 +103,18 @@ const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser 
 
       <div className="flex flex-col">
         <label className="input-label select-none">CREATED AT</label>
-        <p className="select-none">{new Date(noteData?.created_at).toLocaleString()}</p>
+        <p className="select-none">{new Date(noteData?.createdAt).toLocaleString()}</p>
       </div>
 
       <button
+        onClick={handleUpdate}
         className="btn-primary font-medium mt-5 mb-1 p-3"
-        onClick={handleEditUser}
       >
         UPDATE
       </button>
       <button
         className="btn-secondary font-medium m-0 p-3"
-        onClick={handleDeleteUser}
+        onClick={handleDelete}
       >
         DELETE
       </button>

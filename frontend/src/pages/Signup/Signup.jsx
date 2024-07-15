@@ -31,7 +31,7 @@ const Signup = () => {
     setError('');
     try {
       const res = await axiosInstance.post("/api/auth/signup", {
-        username: name,
+        username,
         email,
         password,
         address,
@@ -40,19 +40,16 @@ const Signup = () => {
         console.log("User registered successfully!", res.data);
         console.log(res.date.accessToken);
         navigate("/login");
-
       } else
         if (response.status === 400) {
           setError("Failed! Username or Email is already in use!");
         }
     } catch (error) {
-
       if (error.res && error.res.data && error.res.data.message) {
         setError(error.response.data.message);
       } else {
         setError("Something went wrong. Please try again later");
       }
-
     }
   };
 

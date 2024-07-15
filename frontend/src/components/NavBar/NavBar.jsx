@@ -1,6 +1,7 @@
 import ProfileInfo from "../Cards/ProfileInfo"
 import { useNavigate } from "react-router-dom"
 import SearchBar from "../SearchBar/SearchBar";
+
 const NavBar = () => {
   const navigate = useNavigate();
   const onLogout = () => {
