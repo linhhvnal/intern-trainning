@@ -1,17 +1,41 @@
 import { useState } from "react";
 import { MdClose } from "react-icons/md";
 import propTypes from "prop-types";
-const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser }) => {
+import axiosInstance from "../../utils/axiosInstance";
+const UserDetail = ({ noteData, onClose, getUsers}) => {
     UserDetail.propTypes = {
         noteData: propTypes.object,
-        type: propTypes.string.isRequired,
         onClose: propTypes.func.isRequired,
+        getUsers: propTypes.func.isRequired,
     };
   const [username, setUserName] = useState(noteData?.username);
   const [email, setEmail] = useState(noteData?.email);
   const [address, setAddress] = useState(noteData?.address);
 
-
+  const handleUpdateUser = async () => {
+    const id = noteData?.id;
+    try {
+      await axiosInstance.put(`/api/v1/users/${id}`, {
+        username,
+        email,
+        address,
+      });
+      getUsers(); 
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleDeleteUser = async () => {
+    const id = noteData?.id;
+    try {
+      await axiosInstance.delete(`/api/v1/users/${id}`);
+      getUsers();
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="relative">
       <button
@@ -25,7 +49,7 @@ const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser 
         <label className="input-label select-none">NAME</label>
         <input
           type="text"
-          className="text-xl text-slate-950 outline-none"
+          className="text-xl text-slate-950 outline-none bg-slate-100 rounded-md p-1 m-1"
           placeholder="name"
           value={username}
           onChange={({ target }) => setUserName(target.value)}
@@ -36,7 +60,7 @@ const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser 
         <label className="input-label select-none">EMAIL</label>
         <input
           type="text"
-          className="text-xl text-slate-950 outline-none"
+          className="text-xl text-slate-950 outline-none bg-slate-100 rounded-md p-1 m-1"
           placeholder="email"
           value={email}
           onChange={({ target }) => setEmail(target.value)}
@@ -47,7 +71,7 @@ const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser 
         <label className="input-label select-none">ADDRESS</label>
         <input
           type="text"
-          className="text-xl text-slate-950 outline-none"
+          className="text-xl text-slate-950 outline-none bg-slate-100 rounded-md p-1 m-1"
           placeholder="address"
           value={address}
           onChange={({ target }) => setAddress(target.value)}
@@ -56,12 +80,12 @@ const UserDetail = ({ noteData, type, onClose, handleDeleteUser, handleEditUser 
 
       <div className="flex flex-col">
         <label className="input-label select-none">CREATED AT</label>
-        <h1 className="text-xl text-slate-900 outline-none">{noteData?.createdAt}</h1>
+        <h1 className="text-xl text-slate-900 outline-none p-1 m-1">{noteData?.createdAt}</h1>
       </div>
 
       <button
         className="btn-primary font-medium mt-5 mb-1 p-3"
-        onClick={handleEditUser}
+        onClick={handleUpdateUser}
       >
         UPDATE
       </button>

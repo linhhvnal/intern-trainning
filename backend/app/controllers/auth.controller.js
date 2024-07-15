@@ -26,14 +26,14 @@ exports.signup = async (req, res) => {
       });
       {
         user.setRoles(roles)
-        res.send({ message: "User registered successfully!" });
+        res.status(201).send({ message: "User registered successfully!" });
       
       };
     }
     else {
       // user role = 1
       user.setRoles([1])
-      await res.send({ message: "User registered successfully!" });
+      await res.status(201).send({ message: "User registered successfully!" });
       ;
     }
 

@@ -14,10 +14,16 @@ const UserList = () => {
   const [searchValue, setSearchValue] = useState("");
   const [openEditUser, setOpenEditUser] = useState({
     isOpen: false,
-    type: "edit",
     data: null,
   });
+
+  
   const [users, setUsers] = useState([]);
+  const [updateUser, setUpdateUser] = useState({
+      username: "",
+      email: "",
+      address: "",
+  });
   const usersPerPage = 12;
   const lastUserIndex = currentPage * usersPerPage;
   const firstUserIndex = lastUserIndex - usersPerPage;
@@ -27,11 +33,7 @@ const UserList = () => {
   const handleSearch = async () => {
     if (searchValue !== "") {
       try {
-        const res = await axiosInstance.get(`/api/v1/users?username=${searchValue}`,{
-          headers: {
-            Authorization: `${localStorage.getItem("accessToken")}`
-          }
-        });
+        const res = await axiosInstance.get(`/api/v1/users?username=${searchValue}`);
         setUsers(res.data.data);
         return;
       } catch (error) {
@@ -62,22 +64,30 @@ const UserList = () => {
     }
   }
   useEffect(() => {
-    getUsers();
-    return () => {};
+    if (localStorage.getItem("accessToken") === null) {
+      navigate("/login");
+      return () => {};
+    }else {
+      getUsers();
+      return () => {};
+    }
   }, []);
 
   useEffect(() => {
     handleSearch();
     return () => {};
   }, [searchValue]);
+
+  
+  
   return (
     <>
-      <NavBar value={searchValue} onEnter={handleSearch} onChange={({ target }) => setSearchValue(target.value)}/>
+      <NavBar value={searchValue} onEnter={() => handleSearch} onChange={({ target }) => setSearchValue(target.value)}/>
 
       <div className="flex items-center justify-center mt-10">
         <div className="grid grid-cols-3 ">
           {users.map((user, index) => (
-            <UserCard user={user} key={index} onClick={()=>setOpenEditUser({ isOpen: true , type: "edit", data: user})}/>
+            <UserCard user={user} key={index} onClick={()=>setOpenEditUser({ isOpen: true, data: user})}/>
           ))}
         </div>
       </div>
@@ -99,11 +109,15 @@ const UserList = () => {
         className="w-[40%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-auto"
       >
         <UserDetail
-          type={openEditUser.type}
           noteData={openEditUser.data}
           onClose={() => {
-            setOpenEditUser({ isOpen: false, type: "edit", user: null});
+            setOpenEditUser({ isOpen: false, user: null});
           }}
+          onDelete={()=>{
+            handleDeleteUser(openEditUser.data.id);
+            setOpenEditUser({ isOpen: false, user: null});
+          }}
+          getUsers = {getUsers}
         />
 
       </Modal>
