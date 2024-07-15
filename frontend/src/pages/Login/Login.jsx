@@ -1,17 +1,17 @@
 import PasswordInput from "../../components/Input/PasswordInput.jsx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { validateEmail } from "../../utils/helper.js";
+import axiosInstance from "../../utils/axiosInstance.js";
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-
+  const navigate = useNavigate();
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log(email);
-    if (!validateEmail(email)) {
-      setError("Please enter a valid Email");
+    console.log(username);
+    if (!username) {
+      setError("Please enter a username");
       return;
     }
     if (!password) {
@@ -19,6 +19,23 @@ const Login = () => {
       return;
     }
     setError("");
+    try {
+      const res = await axiosInstance.post("/api/auth/signin", {
+        username: username,
+        password: password,
+      })
+      if (res.data.accessToken && res.data) {
+        localStorage.setItem("accessToken", res.data.accessToken);  
+        localStorage.setItem("user", JSON.stringify(res.data.username));
+        navigate("/");
+      }
+      
+    } catch (error){
+      if (error.res && error.res.data && error.res.data.message){
+        setError(error.response.data.message);
+      } else {
+        setError("Something went wrong. Please try again later");
+    }}
   };
 
   return (
@@ -30,10 +47,10 @@ const Login = () => {
             <h4 className="text-2xl mb-7 select-none">Login</h4>
             <input
               type="text"
-              placeholder="Email"
+              placeholder="Username"
               className="input-box select-none"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             ></input>
             <PasswordInput
               value={password}

@@ -41,7 +41,7 @@ const Signup = () => {
         address: address,
       })
       console.log(res.data);
-      console.log(res.date.accessToken);
+      console.log(res.data.accessToken);
       navigate("/users");
       
     } catch (error){
