@@ -1,8 +1,6 @@
 // import users from "../../assets/users.json";
 import NavBar from "../../components/NavBar/NavBar";
 import UserCard from "../../components/UserCard/UserCard";
-import Pagination from "../../components/Pagination/Pagination";
-import SearchBar from "../../components/SearchBar/SearchBar";
 import UserDetail from "./UserDetail.jsx";
 import Modal from "react-modal";
 import { useState, useEffect } from "react";
@@ -10,7 +8,6 @@ import axiosInstance from "../../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 const UserList = () => {
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [openEditUser, setOpenEditUser] = useState({
     isOpen: false,
@@ -19,17 +16,6 @@ const UserList = () => {
 
   
   const [users, setUsers] = useState([]);
-  const [updateUser, setUpdateUser] = useState({
-      username: "",
-      email: "",
-      address: "",
-  });
-  const usersPerPage = 12;
-  const lastUserIndex = currentPage * usersPerPage;
-  const firstUserIndex = lastUserIndex - usersPerPage;
-  // const currentUsers = users.slice(firstUserIndex, lastUserIndex);
-  // let temp = currentUsers;
-  // let tempLength = temp.length;
   const handleSearch = async () => {
     if (searchValue !== "") {
       try {
@@ -111,10 +97,6 @@ const UserList = () => {
         <UserDetail
           noteData={openEditUser.data}
           onClose={() => {
-            setOpenEditUser({ isOpen: false, user: null});
-          }}
-          onDelete={()=>{
-            handleDeleteUser(openEditUser.data.id);
             setOpenEditUser({ isOpen: false, user: null});
           }}
           getUsers = {getUsers}

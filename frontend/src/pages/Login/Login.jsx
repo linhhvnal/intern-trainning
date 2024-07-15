@@ -24,10 +24,9 @@ const Login = () => {
         username: username,
         password: password,
       })
-      console.log(res.data);
-      console.log(res.data.accessToken);
       if (res.data.accessToken && res.data) {
         localStorage.setItem("accessToken", res.data.accessToken);  
+        localStorage.setItem("user", JSON.stringify(res.data.username));
         navigate("/users");
       }
       
