@@ -1,11 +1,11 @@
 import PropTypes from "prop-types";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 const SearchBar = ({ value, onEnter, onChange}) => {
-  // Add prop validation
-  // SearchBar.propTypes = {
-  //   value: PropTypes.string.isRequired,
-  //   onEnter: PropTypes.func.isRequired,
-  // };
+  SearchBar.propTypes = {
+    value: PropTypes.string.isRequired,
+    onEnter: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
+  };
 
   return (
     <div className="w-80 flex items-center px-4 bg-slate-100 rounded-md">

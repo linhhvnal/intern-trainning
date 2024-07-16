@@ -9,17 +9,21 @@ const UserDetail = ({ noteData, onClose, getUsers}) => {
         getUsers: propTypes.func.isRequired,
     };
   const [username, setUserName] = useState(noteData?.username);
-  const [email, setEmail] = useState(noteData?.email);
   const [address, setAddress] = useState(noteData?.address);
 
   const handleUpdateUser = async () => {
     const id = noteData?.id;
+    const temp = noteData?.username;
+    const tempName = JSON.parse(localStorage.getItem("user"));
+
     try {
       await axiosInstance.put(`/api/v1/users/${id}`, {
         username,
-        email,
         address,
       });
+      if (temp === tempName) {
+        localStorage.setItem("user", JSON.stringify(username));
+      }
       getUsers(); 
       onClose();
     } catch (error) {
@@ -28,10 +32,15 @@ const UserDetail = ({ noteData, onClose, getUsers}) => {
   };
   const handleDeleteUser = async () => {
     const id = noteData?.id;
+    const temp = noteData?.username;
+    const tempName = JSON.parse(localStorage.getItem("user"));
     try {
       await axiosInstance.delete(`/api/v1/users/${id}`);
-      getUsers();
+      if (temp === tempName) {
+        localStorage.clear();
+      }
       onClose();
+      getUsers();
     } catch (error) {
       console.log(error);
     }
@@ -58,13 +67,7 @@ const UserDetail = ({ noteData, onClose, getUsers}) => {
 
       <div className="flex flex-col">
         <label className="input-label select-none">EMAIL</label>
-        <input
-          type="text"
-          className="text-xl text-slate-950 outline-none bg-slate-100 rounded-md p-1 m-1"
-          placeholder="email"
-          value={email}
-          onChange={({ target }) => setEmail(target.value)}
-        />
+        <h1 className="text-xl text-slate-900 outline-none p-1 m-1">{noteData?.email}</h1>
       </div>
 
       <div className="flex flex-col">

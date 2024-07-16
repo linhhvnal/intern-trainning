@@ -1,7 +1,13 @@
 import ProfileInfo from "../Cards/ProfileInfo"
 import { useNavigate } from "react-router-dom"
 import SearchBar from "../SearchBar/SearchBar";
+import PropTypes from "prop-types";
 const NavBar = ({value, onEnter, onChange}) => {
+  NavBar.propTypes = {
+    value: PropTypes.string.isRequired,
+    onEnter: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
+  };
   const navigate = useNavigate();
   const onLogout = () => {
     localStorage.clear();

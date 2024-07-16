@@ -1,4 +1,3 @@
-// import users from "../../assets/users.json";
 import NavBar from "../../components/NavBar/NavBar";
 import UserCard from "../../components/UserCard/UserCard";
 import UserDetail from "./UserDetail.jsx";
@@ -6,7 +5,10 @@ import Modal from "react-modal";
 import { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import Pagination from "../../components/Pagination/Pagination";
 const UserList = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersLength, setUsersLength] = useState(0);
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
   const [openEditUser, setOpenEditUser] = useState({
@@ -24,6 +26,8 @@ const UserList = () => {
             Authorization: `${localStorage.getItem("accessToken")}`
         }});
         setUsers(res.data.data);
+        setUsersLength(res.data.pagedlength);
+        setCurrentPage(1);
         return;
       } catch (error) {
         console.log(error);
@@ -39,12 +43,14 @@ const UserList = () => {
       return;
     }
     try {
-      const res = await axiosInstance.get("/api/v1/users",{
+      const res = await axiosInstance.get(`/api/v1/users?page=${currentPage}`,{
         headers: {
           Authorization: `${localStorage.getItem("accessToken")}`
         }
       });
       setUsers(res.data.data);
+      console.log(res.data.length);
+      setUsersLength(res.data.length);
     } catch (error) {
       console.log(error);
       setUsers([]);
@@ -58,7 +64,7 @@ const UserList = () => {
       getUsers();
       return () => {};
     }
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     handleSearch();
@@ -71,18 +77,18 @@ const UserList = () => {
     <>
       <NavBar value={searchValue} onEnter={() => handleSearch} onChange={({ target }) => setSearchValue(target.value)}/>
 
-      <div className="flex items-center justify-center mt-10">
+      <div className="flex items-center justify-center mt-20">
         <div className="grid grid-cols-3 ">
           {users.map((user, index) => (
             <UserCard user={user} key={index} onClick={()=>setOpenEditUser({ isOpen: true, data: user})}/>
           ))}
         </div>
       </div>
-      {/* <Pagination
-        totalUsers={searchValue === "" ? users.length : tempLength}
-        usersPerPage={usersPerPage}
+      <Pagination
+        totalUsers={usersLength}
+        usersPerPage={9}
         setCurrentPage={setCurrentPage}
-      /> */}
+      />
 
       <Modal
         isOpen={openEditUser.isOpen}

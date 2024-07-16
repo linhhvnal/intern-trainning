@@ -6,7 +6,7 @@ const { ParseAndPaginateUsers } = require('../helper/paging');
 const { filterUsersName, filterUserId } = require("../helper/userFilter");
 exports.listUser = async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 9;
     const page = parseInt(req.query.page) || 1;
     const filterName = req.query.username;
     const filterId = req.query.id;
@@ -26,6 +26,9 @@ exports.listUser = async (req, res) => {
     res.json({
       message: "User List",
       data: paginatedUsers,
+      length: users.length,
+      pagedlength: paginatedUsers.length,
+
     });
   } catch (error) {
     res.status(500).json({

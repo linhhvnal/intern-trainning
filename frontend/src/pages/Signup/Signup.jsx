@@ -42,7 +42,7 @@ const Signup = () => {
       })
       console.log(res.data);
       console.log(res.data.accessToken);
-      navigate("/users");
+      navigate("/login");
       
     } catch (error){
       if (error.res && error.res.data && error.res.data.message){
