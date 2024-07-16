@@ -35,7 +35,7 @@ const Login = () => {
         localStorage.setItem('accessToken', res.data.accessToken);
         localStorage.setItem('username', res.data.username);
 
-        navigate("/users");
+        navigate("/");
 
       }
     } catch (error) {
@@ -45,7 +45,7 @@ const Login = () => {
   };
   useEffect(() => {
     if (localStorage.getItem('accessToken')) {
-      navigate('/users');
+      navigate('/');
       return;
     }
   })

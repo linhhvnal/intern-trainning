@@ -1,4 +1,3 @@
-import users from "../../assets/users.json";
 import NavBar from "../../components/NavBar/NavBar";
 import UserCard from "../../components/UserCard/UserCard";
 import Pagination from "../../components/Pagination/Pagination";
@@ -10,7 +9,7 @@ import { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 const UserList = () => {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [page, setPage] = useState(1);
 
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
@@ -19,7 +18,8 @@ const UserList = () => {
     type: "edit",
     data: null,
   });
-  const usersPerPage = 12;
+  const limit = 12;
+  
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
@@ -64,13 +64,13 @@ const UserList = () => {
   }, [searchValue, users]); 
 
   const handlePageChange = (newPage) => {
-    if (newPage > 0 && newPage <= Math.ceil(totalUsers / usersPerPage)) {
-      setCurrentPage(newPage);
+    if (newPage > 0 && newPage <= Math.ceil(totalUsers / limit)) {
+      setPage(newPage);
     }
   };
 
-  const startIndex = (currentPage - 1) * usersPerPage;
-  const endIndex = Math.min(currentPage * usersPerPage, filteredUsers.length);
+  const startIndex = (page - 1) * limit;
+  const endIndex = Math.min(page * limit, filteredUsers.length);
   const displayedUsers = filteredUsers.slice(startIndex, endIndex);
 
   return (
@@ -90,11 +90,11 @@ const UserList = () => {
           ))}
         </div>
       </div>
-      {totalUsers > usersPerPage && (
+      {totalUsers > limit && (
         <Pagination
           totalUsers={totalUsers}
-          usersPerPage={usersPerPage}
-          currentPage={currentPage}
+          usersPerPage={limit}
+          currentPage={page}
           setCurrentPage={handlePageChange}
         />
       )}

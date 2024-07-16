@@ -1,11 +1,10 @@
 import { useState } from "react";
 import PasswordInput from "../../components/Input/PasswordInput";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const [redirecting, setRedirecting] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [address, setAddress] = useState("");
@@ -41,7 +40,7 @@ const Signup = () => {
         console.log(res.date.accessToken);
         navigate("/login");
       } else
-        if (response.status === 400) {
+        if (res.status === 400) {
           setError("Failed! Username or Email is already in use!");
         }
     } catch (error) {
@@ -107,9 +106,6 @@ const Signup = () => {
           </form>
         </div>
       </div>
-      {redirecting && (
-        <p className="text-blue-500 text-center pb-1 select-none">Redirecting to Login...</p>
-      )}
     </>
 
   );
