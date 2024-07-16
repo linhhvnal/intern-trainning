@@ -4,10 +4,10 @@ import Pagination from "../../components/Pagination/Pagination";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import UserDetail from "./UserDetail.jsx";
 import Modal from "react-modal";
-
 import { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
+
 const UserList = () => {
   const [page, setPage] = useState(1);
 
@@ -19,13 +19,12 @@ const UserList = () => {
     data: null,
   });
   const limit = 12;
-  
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
 
 
-// navigate if not authentica.
+  // navigate if not authentica.
   const getUsers = async () => {
     const accessToken = localStorage.getItem('accessToken')
     if (!accessToken) {
@@ -52,7 +51,7 @@ const UserList = () => {
   useEffect(() => {
     getUsers();
     return () => { };
-  }, []);
+  }, [page]);
 
   ////paging
   useEffect(() => {
@@ -61,7 +60,7 @@ const UserList = () => {
     );
     setFilteredUsers(filtered);
     setTotalUsers(filtered.length);
-  }, [searchValue, users]); 
+  }, [searchValue, users]);
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= Math.ceil(totalUsers / limit)) {
