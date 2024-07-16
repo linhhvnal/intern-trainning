@@ -13,12 +13,17 @@ const UserDetail = ({ noteData, onClose, getUsers}) => {
 
   const handleUpdateUser = async () => {
     const id = noteData?.id;
+    const temp = noteData?.username;
+    const tempName = JSON.parse(localStorage.getItem("user"));
+
     try {
       await axiosInstance.put(`/api/v1/users/${id}`, {
         username,
         address,
       });
-      localStorage.setItem("user", JSON.stringify(username));
+      if (temp === tempName) {
+        localStorage.setItem("user", JSON.stringify(username));
+      }
       getUsers(); 
       onClose();
     } catch (error) {

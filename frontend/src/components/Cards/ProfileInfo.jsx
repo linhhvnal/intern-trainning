@@ -1,6 +1,9 @@
 import { getInitials } from "../../utils/helper"
-
+import PropTypes from "prop-types";
 const ProfileInfo = ({onLogout}) => {
+  ProfileInfo.propTypes = {
+    onLogout: PropTypes.func.isRequired,
+  };
   const user = JSON.parse(localStorage.getItem("user"));
   return (
     <div className="flex item-center gap-3">
