@@ -28,10 +28,15 @@ const UserDetail = ({ noteData, onClose, getUsers}) => {
   };
   const handleDeleteUser = async () => {
     const id = noteData?.id;
+    const temp = noteData?.username;
+    const tempName = JSON.parse(localStorage.getItem("user"));
     try {
       await axiosInstance.delete(`/api/v1/users/${id}`);
-      getUsers();
+      if (temp === tempName) {
+        localStorage.clear();
+      }
       onClose();
+      getUsers();
     } catch (error) {
       console.log(error);
     }
